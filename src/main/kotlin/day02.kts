@@ -33,16 +33,16 @@ enum class Direction {
     abstract fun move_complex(pos: Position, mag: Int) : Position
 }
 
-data class Position(var x: Int, var y: Int, var aim: Int);
+data class Position(var x: Int = 0, var y: Int = 0, var aim: Int = 0);
 
 val input: List<Pair<Direction, Int>> = Utils.readFile("day02",
-    { line ->   val stuff = line.split(" "); Pair(Direction.valueOf(stuff[0].uppercase()), stuff[1].toInt())},
+    { line -> val stuff = line.split(" "); Pair(Direction.valueOf(stuff[0].uppercase()), stuff[1].toInt())},
     ::ArrayList,
     { item, collector -> collector.add(item) }
 )
 
-var posa = Position(0, 0, 0)
-var posb = Position(0, 0, 0)
+var posa = Position()
+var posb = Position()
 
 input.forEach {
     posa = it.first.move_simple(posa, it.second)
