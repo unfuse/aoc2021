@@ -26,5 +26,9 @@ class Utils {
         fun readFileAsIntList(fileName: String) : List<Int> {
             return readFile(fileName, String::toInt, ::ArrayList) { item, collector -> collector += item }
         }
+
+        fun readFileAsStringList(fileName: String) : List<String> {
+            return readFile(fileName, { s -> s }, ::ArrayList) { item, collector -> collector += item }
+        }
     }
 }
