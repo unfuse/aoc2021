@@ -4,6 +4,10 @@ class Utils {
 
     companion object {
 
+        fun readFileSplitByNewlines(fileName: String): List<String> {
+            return File("/Users/david.kennedy/code/hacks/aoc2021/src/main/resources/$fileName.txt").readText().split("\n\n")
+        }
+
         // There's probably a snazzier way of doing this directly with collectors, but I can't quite get the types
         //   to work out correctly, so I am relying on future me to get it.
         fun <F, L> readFile(
