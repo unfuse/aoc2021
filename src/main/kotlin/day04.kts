@@ -97,44 +97,25 @@ val numbers: List<Int> = input[0].split(",").map { it.toInt() }
 var i = 1
 val boards: List<Board> = input.subList(1, input.size).map { Board(it, i++) }
 
-fun playGame1(numbers: List<Int>, boards: List<Board>) : Int {
-    for (num in numbers) {
-        for (board in boards) {
-            board.check(num)
-            if (board.isWinCondition()) {
-                return board.score()
-            }
-        }
-    }
-
-    throw IllegalStateException("Game finished with no winners")
-}
-
-fun playGame2(numbers: List<Int>, boards: List<Board>) : Int {
+fun playAllNumbers(numbers: List<Int>, boards: List<Board>) : List<Board> {
+    val winners: MutableList<Board> = mutableListOf()
     var curBoards = boards.toMutableList()
-    var lastBoardToWin: Board? = null
     for (num in numbers) {
         val nextBoards = curBoards.toMutableList()
         for (board in curBoards) {
             board.check(num)
             if (board.isWinCondition()) {
-                lastBoardToWin = board
-                if (curBoards.size == 1) {
-                    // boards ran out before nums
-                    return board.score()
-                }
-                else {
-                    nextBoards.remove(board)
-                }
+                // stop playing a board if it wins to preserve the score
+                nextBoards.remove(board)
+                winners.add(board)
             }
         }
         curBoards = nextBoards
     }
 
-    // num list ran out before board list
-    return lastBoardToWin?.score() ?: throw IllegalStateException("did not have a last board to win after all numbers used")
+    return winners.toList()
 }
 
-// need to make lists of copies of boards so i can play both of these in one run, but for now comment one out
-//println(playGame1(numbers, boards.toList()))
-println(playGame2(numbers, boards.toList()))
+val winners = playAllNumbers(numbers,boards)
+println(winners.first().score())
+println(winners.last().score())
