@@ -23,7 +23,7 @@ class Board(input: String, id: Int) {
     val id: Int = id
     val board: Map<Int, Cell>
     val allCells: Set<Cell>
-    var checked: MutableList<Cell> = mutableListOf()
+    val checked: MutableList<Cell> = mutableListOf()
 
     init {
         var y = 0
@@ -42,7 +42,7 @@ class Board(input: String, id: Int) {
     }
 
     fun check(num: Int) {
-        board[num]?.let { checked.add(it) }
+        board[num]?.let(checked::add)
     }
 
     fun isWinCondition() : Boolean {
@@ -51,17 +51,15 @@ class Board(input: String, id: Int) {
         }
         // Win must occur with last cell to be played
         val lastCell: Cell = checked.last()
-        val xList = checked.filter { it.point.x == lastCell.point.x }.sorted()
-        val yList = checked.filter { it.point.y == lastCell.point.y }.sorted()
+        val xList = checked.filter { it.point.x == lastCell.point.x }
+        val yList = checked.filter { it.point.y == lastCell.point.y }
 
         return xList.size == 5 || yList.size == 5;
     }
 
     fun score() : Int {
         if (isWinCondition()) {
-            val lastCell: Cell = checked.last()
-            val unchecked: List<Int> = allCells.filter { !checked.contains(it) }.map { it.num }
-            return unchecked.sum() * lastCell.num
+            return checked.last().num * allCells.filterNot(checked::contains).sumOf { it.num }
         }
         return -1
     }
@@ -95,7 +93,7 @@ val numbers: List<Int> = input[0].split(",").map { it.toInt() }
 
 // remaining lines are boards
 var i = 1
-val boards: List<Board> = input.subList(1, input.size).map { Board(it, i++) }
+val boards: List<Board> = input.drop(1).map { Board(it, i++) }
 
 fun playAllNumbers(numbers: List<Int>, boards: List<Board>) : List<Board> {
     val winners: MutableList<Board> = mutableListOf()

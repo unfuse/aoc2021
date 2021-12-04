@@ -1,3 +1,2 @@
-/build/**
 /src/main/resources/test.txt
-/build/*
+/build/
