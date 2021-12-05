@@ -1,6 +1,4 @@
 import kotlin.math.abs
-import kotlin.math.max
-import kotlin.math.min
 
 data class Line(val start: Point, val end: Point) {
 
@@ -8,13 +6,13 @@ data class Line(val start: Point, val end: Point) {
         return this.getPoints().intersect(that.getPoints())
     }
 
-    fun getPoints() : List<Point> {
+    private fun getPoints() : List<Point> {
         if (isHorizonal()) {
-            return IntRange(min(this.start.x, this.end.x), max(this.start.x, this.end.x)).map { Point(it, this.start.y) }
+            return start.x.toward(end.x).toList().map { Point(it, start.y) }
         }
 
         if (isVertical()) {
-            return IntRange(min(this.start.y, this.end.y), max(this.start.y, this.end.y)).map { Point(this.start.x, it) }
+            return start.y.toward(end.y).toList().map { Point(start.x, it) }
         }
 
         if (isOneSlope()) {
@@ -27,15 +25,15 @@ data class Line(val start: Point, val end: Point) {
         throw IllegalStateException("idk what to do")
     }
 
-    fun isHorizonal() : Boolean {
+    private fun isHorizonal() : Boolean {
         return start.y == end.y
     }
 
-    fun isVertical() : Boolean {
+    private fun isVertical() : Boolean {
         return start.x == end.x
     }
 
-    fun isOneSlope() : Boolean {
+    private fun isOneSlope() : Boolean {
         return abs(this.start.x - this.end.x) == abs(this.start.y - this.end.y)
     }
 
