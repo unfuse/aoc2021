@@ -44,6 +44,7 @@ data class Line(val start: Point, val end: Point) {
     // ridiculous that something like this isn't built in to "range" in the base package.
     // a..b and b..a should work regardless of which one is smaller
     // stackoverflow eventually educated me for why it wasn't working and i stole this
+    // https://stackoverflow.com/questions/9562605/in-kotlin-can-i-create-a-range-that-counts-backwards
     private infix fun Int.toward(to: Int): IntProgression {
         val step = if (this > to) -1 else 1
         return IntProgression.fromClosedRange(this, to, step)
