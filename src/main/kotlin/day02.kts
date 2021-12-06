@@ -35,11 +35,11 @@ enum class Direction {
 
 data class Position(var x: Int = 0, var y: Int = 0, var aim: Int = 0);
 
-val input: List<Pair<Direction, Int>> = Utils.readFile("day02",
-    { line -> val stuff = line.split(" "); Pair(Direction.valueOf(stuff[0].uppercase()), stuff[1].toInt())},
-    ::ArrayList,
-    { item, collector -> collector.add(item) }
-)
+val input: List<Pair<Direction, Int>> = Utils.readFileAsList("day02")
+{ line ->
+    val stuff = line.split(" ")
+    Pair(Direction.valueOf(stuff[0].uppercase()), stuff[1].toInt())
+}
 
 var posa = Position()
 var posb = Position()

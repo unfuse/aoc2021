@@ -10,9 +10,9 @@ data class Cell(val point: Point, val num: Int) : Comparable<Cell> {
 
 class Board(input: String, id: Int) {
     val id: Int = id
-    val board: Map<Int, Cell>
-    val allCells: Set<Cell>
-    val checked: MutableList<Cell> = mutableListOf()
+    private val board: Map<Int, Cell>
+    private val allCells: Set<Cell>
+    private val checked: MutableList<Cell> = mutableListOf()
 
     init {
         var y = 0
@@ -21,7 +21,7 @@ class Board(input: String, id: Int) {
             var x = 0
             line.trim().replace(Regex(" +"), ",").split(",").forEach { cell ->
                 val num = cell.toInt()
-                _board.put(num, Cell(Point(x, y), num))
+                _board[num] = Cell(Point(x, y), num)
                 x++
             }
             y++
@@ -57,16 +57,9 @@ class Board(input: String, id: Int) {
         var string = "\n"
         allCells.sorted().windowed(5, 5).forEach { row ->
             row.forEach { cell ->
-                if (cell.num < 10) {
-                    string += " "
-                }
+                if (cell.num < 10) { string += " " }
                 string += cell.num
-                if (checked.contains(cell)) {
-                    string += "*"
-                }
-                else {
-                    string += " "
-                }
+                string += if (checked.contains(cell)) { "*" } else { " " }
                 string += " "
             }
             string += "\n"
@@ -78,7 +71,7 @@ class Board(input: String, id: Int) {
 val input = Utils.readFileSplitByNewlines("day04")
 
 // first line contains ordered bingo numbers
-val numbers: List<Int> = input[0].split(",").map { it.toInt() }
+val numbers: List<Int> = input.first().split(",").map { it.toInt() }
 
 // remaining lines are boards
 var i = 1
@@ -103,6 +96,6 @@ fun playAllNumbers(numbers: List<Int>, boards: List<Board>) : List<Board> {
     return winners.toList()
 }
 
-val winners = playAllNumbers(numbers,boards)
+val winners = playAllNumbers(numbers, boards)
 println(winners.first().score())
 println(winners.last().score())

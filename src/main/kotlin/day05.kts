@@ -1,4 +1,5 @@
 import kotlin.math.abs
+import Utils.Companion.toward
 
 data class Line(val start: Point, val end: Point) {
 
@@ -7,7 +8,7 @@ data class Line(val start: Point, val end: Point) {
     }
 
     private fun getPoints() : List<Point> {
-        if (isHorizonal()) {
+        if (isHorizontal()) {
             return start.x.toward(end.x).toList().map { Point(it, start.y) }
         }
 
@@ -25,7 +26,7 @@ data class Line(val start: Point, val end: Point) {
         throw IllegalStateException("idk what to do")
     }
 
-    private fun isHorizonal() : Boolean {
+    private fun isHorizontal() : Boolean {
         return start.y == end.y
     }
 
@@ -38,27 +39,18 @@ data class Line(val start: Point, val end: Point) {
     }
 
     fun partOneFilter() : Boolean {
-        return isHorizonal() || isVertical()
-    }
-
-    // ridiculous that something like this isn't built in to "range" in the base package.
-    // a..b and b..a should work regardless of which one is smaller
-    // stackoverflow eventually educated me for why it wasn't working and i stole this
-    // https://stackoverflow.com/questions/9562605/in-kotlin-can-i-create-a-range-that-counts-backwards
-    private infix fun Int.toward(to: Int): IntProgression {
-        val step = if (this > to) -1 else 1
-        return IntProgression.fromClosedRange(this, to, step)
+        return isHorizontal() || isVertical()
     }
 }
 
-val input: List<Line> = Utils.readFile("day05",
-    {line: String -> val points = line.split("->").map {
-            part: String -> val stuff = part.trim().split(",");
-            Point(stuff[0].toInt(), stuff[1].toInt()) };
-        Line(points[0], points[1]) },
-    ::ArrayList,
-    { item, collector -> collector += item }
-)
+val input: List<Line> = Utils.readFileAsList("day05")
+{ line: String ->
+    val points = line.split("->").map { part: String ->
+        val stuff = part.trim().split(",");
+        Point(stuff[0].toInt(), stuff[1].toInt())
+    }
+    Line(points[0], points[1])
+}
 
 fun getOverlaps(lines: List<Line>) : Set<Point> {
     val overlaps: MutableSet<Point> = mutableSetOf()
