@@ -10,7 +10,7 @@ class Utils {
 
         // There's probably a snazzier way of doing this directly with collectors, but I can't quite get the types
         //   to work out correctly, so I am relying on future me to get it.
-        fun <F, L> readFile(
+        private fun <F, L> readFile(
             fileName: String,
             lineMapper: (line: String) -> L,
             collectorSupplier: () -> F,
@@ -31,6 +31,17 @@ class Utils {
             return openFile(fileName).readText().split("\n\n")
         }
 
+        fun <L> readLineAsList(fileName: String, itemMapper: (item: String) -> L) : List<L> {
+            return openFile(fileName).readText().split(",").map(itemMapper)
+        }
+
+        fun readLineAsIntList(fileName: String) : List<Int> {
+            return readLineAsList(fileName) { it.toInt() }
+        }
+
+        fun readLineAsStringList(fileName: String) : List<String> {
+            return readLineAsList(fileName) { it }
+        }
 
         fun <L> readFileAsList(fileName: String, lineMapper: (line: String) -> L) : List<L> {
             return readFile(fileName, lineMapper, ::ArrayList ) { item, collector -> collector += item }

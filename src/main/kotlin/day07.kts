@@ -2,11 +2,7 @@ import Utils.Companion.toward
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
-val input : List<Int> = Utils.readFile<ArrayList<Int>, List<Int>>("day07",
-    { line -> line.split(",").map{ it.toInt() } },
-    ::ArrayList,
-    { item, collector -> collector.addAll(item) })
-    .sorted()
+val input : List<Int> = Utils.readLineAsIntList("day07").sorted()
 
 fun List<Int>.median() : Int {
     return if (this.size % 2 != 0) {

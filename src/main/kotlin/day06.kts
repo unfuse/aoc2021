@@ -13,11 +13,9 @@ data class Lanternfish(var cycle: Int, val multiplier: Long) {
     }
 }
 
-val input: List<Lanternfish> = Utils.readFile("day06",
-    { line -> line.split(",").map { it.toInt() }.groupBy { it }.map { Lanternfish(it.key, it.value.size.toLong()) }},
-    ::ArrayList,
-    { item, collector -> collector.addAll(item) }
-)
+val input: List<Lanternfish> = Utils.readLineAsIntList("day06")
+    .groupBy { it }
+    .map { Lanternfish(it.key, it.value.size.toLong()) }
 
 var allFish: MutableList<Lanternfish> = input.toMutableList()
 for (i in 0 until 256) {
