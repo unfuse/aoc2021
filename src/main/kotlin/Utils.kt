@@ -55,6 +55,20 @@ class Utils {
             return readFileAsList(fileName) { it }
         }
 
+        fun <L> readFileAsGrid(fileName: String, lineMapper: (line: String) -> List<String>, cellMapper: (cell: String) -> L) : Grid<L> {
+            val grid : MutableMap<Point, L> = mutableMapOf()
+            var y = 0
+            openFile(fileName).readLines().map(lineMapper).forEach { line ->
+                var x = 0
+                line.map(cellMapper).forEach { cell ->
+                    grid[Point(x++, y)] = cell
+                }
+                y++
+            }
+
+            return Grid(grid)
+        }
+
         // ridiculous that something like this isn't built in to "range" in the base package.
         // a..b and b..a should work regardless of which one is smaller
         // stackoverflow eventually educated me for why it wasn't working, so I stole this
