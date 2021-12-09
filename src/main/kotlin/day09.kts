@@ -16,27 +16,27 @@ val basinPairs : List<Pair<Point, Int>> = input.getEntries()
 println(basinPairs.sumOf { it.second + 1 })
 
 // Part 2
-val basinPoints : List<Point> = basinPairs.map { it.first }
-val basins : MutableMap<Point, MutableSet<Point>> = mutableMapOf()
-for (basin in basinPoints) {
-    val valley: MutableSet<Point> = mutableSetOf()
-    getValley(input, basin, mutableSetOf(), valley)
-    basins[basin] = valley
-}
+println(basinPairs.asSequence()
+    .map { it.first }
+    .map { getValley(it).size }
+    .sortedByDescending { it }
+    .take(3)
+    .reduce(Int::times)
+)
 
-println(basins.map { Pair(it.key, it.value.size) }.sortedByDescending { it.second }.take(3).map { it.second }.reduce(Int::times))
-
-// seenPoints to help cache things we have already seen
-// valley is the incrementally built useful return value
-fun getValley(grid: Grid<Int>, point: Point, seenPoints: MutableSet<Point>, valley: MutableSet<Point>) {
-    if (seenPoints.contains(point)) {
-        return
-    }
-    seenPoints.add(point)
-    grid.getVal(point)?.let {
-        if (it != 9) {
-            valley.add(point)
-            adjPointsMapper.invoke(point).forEach { adj -> getValley(grid, adj, seenPoints, valley) }
+// technically the Grid should be parameterized, but it saves my poor stack frame to ref the "global" variable
+// memo to help cache things we have already seen
+// returns the set of points in the valley (meanwhile wrecking my precious stack frame anyway =( )
+fun getValley(point: Point, memo: MutableSet<Point> = mutableSetOf()) : MutableSet<Point> {
+    val response : MutableSet<Point> = mutableSetOf()
+    if (!memo.contains(point)) {
+        memo.add(point)
+        input.getVal(point)?.let {
+            if (it != 9) {
+                response.add(point)
+                adjPointsMapper.invoke(point).forEach { adj -> response.addAll(getValley(adj, memo)) }
+            }
         }
     }
+    return response
 }
