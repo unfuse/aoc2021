@@ -18,11 +18,10 @@ val input: List<Lanternfish> = Utils.readLineAsIntList("day06")
     .map { Lanternfish(it.key, it.value.size.toLong()) }
 
 var allFish: MutableList<Lanternfish> = input.toMutableList()
+
+// part 1 is to 80
 for (i in 0 until 256) {
-    var rollingMult = 0L
-    for (fish in allFish) {
-        rollingMult += fish.process()
-    }
+    val rollingMult = allFish.sumOf(Lanternfish::process)
     val nextFish : MutableList<Lanternfish> = mutableListOf()
     // Make new fish group if needed
     if (rollingMult > 0) { nextFish.add(Lanternfish(8, rollingMult)) }
