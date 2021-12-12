@@ -1,7 +1,15 @@
 data class Point(val x: Int, val y: Int) : Comparable<Point> {
+    fun plus(point: Point) : Point {
+        return Point(x + point.x, y + point.y)
+    }
+
+    fun minus(point: Point) : Point {
+        return Point(x - point.x, y - point.y)
+    }
+
     override fun compareTo(other: Point): Int {
-        val xCompare = this.x.compareTo(other.x)
-        return if (xCompare != 0) xCompare else this.y.compareTo(other.y)
+        val yCompare = this.y.compareTo(other.y)
+        return if (yCompare != 0) yCompare else this.x.compareTo(other.x)
     }
 
     override fun toString(): String {

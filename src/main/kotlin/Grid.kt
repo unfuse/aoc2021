@@ -12,12 +12,16 @@ class Grid<T>(grid: Map<Point, T>) {
             _height = maxOf(_height, it.y)
         }
 
-        width = _width
-        height = _height
+        width = _width + 1
+        height = _height + 1
     }
 
     fun getPoints() : List<Point> {
         return grid.keys.toList()
+    }
+
+    fun getValues() : Collection<T> {
+        return grid.values.toSet()
     }
 
     fun getEntries() : List<Pair<Point, T>> {
@@ -29,7 +33,7 @@ class Grid<T>(grid: Map<Point, T>) {
     }
 
     fun getRow(y: Int) : List<Pair<Int, T>>? {
-        if (y < 0 || y > height) {
+        if (y < 0 || y >= height) {
             return null
         }
 
@@ -37,11 +41,19 @@ class Grid<T>(grid: Map<Point, T>) {
     }
 
     fun getCol(x: Int) : List<Pair<Int, T>>? {
-        if (x < 0 || x > width) {
+        if (x < 0 || x >= width) {
             return null
         }
 
         return grid.filter { it.key.x == x }.map { Pair(it.key.y, it.value) }
+    }
+
+    fun visit(x: Int, y: Int, visitor: (T) -> Unit) {
+        visit(Point(x, y), visitor)
+    }
+
+    fun visit(point: Point, visitor: (T) -> Unit) {
+        grid[point]?.let(visitor)
     }
 
     fun update(x: Int, y: Int, item: T) : T? {
@@ -57,5 +69,12 @@ class Grid<T>(grid: Map<Point, T>) {
             grid[point] = item
             null
         }
+    }
+
+    override fun toString(): String {
+        return getPoints().sorted()
+            .map { grid[it]?.toString() }
+            .windowed(height, height)
+            .joinToString("\n") { it.joinToString("") }
     }
 }
