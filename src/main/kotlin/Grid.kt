@@ -1,3 +1,5 @@
+import Utils.Companion.toward
+
 class Grid<T>(grid: Map<Point, T>) {
     private val grid: MutableMap<Point, T> = grid.toMutableMap()
     private val width: Int
@@ -22,6 +24,11 @@ class Grid<T>(grid: Map<Point, T>) {
 
     fun getValues() : Collection<T> {
         return grid.values.toSet()
+    }
+
+    // The points in the map may be incomplete (sparse matrix style) - allow getting all "virtual" points for processing
+    fun getVirtualPoints() : List<Point> {
+        return 0.toward(width-1).flatMap { x -> 0.toward(height-1).map{ Point(x, it) } }
     }
 
     fun getEntries() : List<Pair<Point, T>> {
@@ -72,9 +79,9 @@ class Grid<T>(grid: Map<Point, T>) {
     }
 
     override fun toString(): String {
-        return getPoints().sorted()
-            .map { grid[it]?.toString() }
-            .windowed(height, height)
+        return getVirtualPoints().sorted()
+            .map { grid[it]?.toString() ?: "." }
+            .windowed(width, width)
             .joinToString("\n") { it.joinToString("") }
     }
 }
