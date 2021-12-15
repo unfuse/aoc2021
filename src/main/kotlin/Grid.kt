@@ -2,8 +2,8 @@ import Utils.Companion.toward
 
 class Grid<T>(grid: Map<Point, T>) {
     private val grid: MutableMap<Point, T> = grid.toMutableMap()
-    private val width: Int
-    private val height: Int
+    val width: Int
+    val height: Int
 
     init {
         var _width = 0
@@ -16,6 +16,10 @@ class Grid<T>(grid: Map<Point, T>) {
 
         width = _width + 1
         height = _height + 1
+    }
+
+    fun hasPoint(point: Point) : Boolean {
+        return grid.keys.contains(point)
     }
 
     fun getPoints() : List<Point> {

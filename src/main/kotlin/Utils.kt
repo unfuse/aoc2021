@@ -55,7 +55,9 @@ class Utils {
             return readFileAsList(fileName) { it }
         }
 
-        fun <L> readFileAsGrid(fileName: String, lineMapper: (line: String) -> List<String>, cellMapper: (cell: String) -> L) : Grid<L> {
+        fun <L> readFileAsGrid(fileName: String,
+                               lineMapper: (line: String) -> List<String>,
+                               cellMapper: (cell: String) -> L) : Grid<L> {
             val grid : MutableMap<Point, L> = mutableMapOf()
             var y = 0
             openFile(fileName).readLines().map(lineMapper).forEach { line ->

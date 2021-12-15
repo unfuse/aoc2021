@@ -1,3 +1,5 @@
+import kotlin.math.abs
+
 data class Point(val x: Int, val y: Int) : Comparable<Point> {
     fun plus(point: Point) : Point {
         return Point(x + point.x, y + point.y)
@@ -5,6 +7,10 @@ data class Point(val x: Int, val y: Int) : Comparable<Point> {
 
     fun minus(point: Point) : Point {
         return Point(x - point.x, y - point.y)
+    }
+
+    fun manhattan(point: Point) : Int {
+        return abs(point.x - x) + abs(point.y - y)
     }
 
     override fun compareTo(other: Point): Int {
