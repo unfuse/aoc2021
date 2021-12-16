@@ -1,4 +1,4 @@
-val input = Utils.readFileSplitByNewlines("test")
+val input = Utils.readFileSplitByNewlines("day14")
 
 val reactors : Map<String, String> = input[1].lines()
     .flatMap { it.split("->") }
@@ -23,7 +23,7 @@ fun String.slickZip(other: String) : String {
     return result
 }
 
-val upTo = 2
+val upTo = 40
 
 for (i in 1..minOf(upTo, 10)) {
     val addins : String = sequence
@@ -32,26 +32,22 @@ for (i in 1..minOf(upTo, 10)) {
     sequence = sequence.slickZip(addins)
 }
 
-println(sequence)
+var countMap: MutableMap<String, Long> = sequence.groupBy{ it }.map { Pair(it.key.toString(), it.value.size.toLong()) }.toMap().toMutableMap()
 
-var countMap: Map<String, Long> = sequence.groupBy{ it }.map { Pair(it.key.toString(), it.value.size.toLong()) }.toMap()
-
-println(countMap)
 println(countMap.values.maxOrNull()!! - countMap.values.minOrNull()!!)
 
 // part 2
 var countCache : MutableMap<String, Long> = reactors.keys.associateWith { 0L }.toMutableMap()
 input[0].windowed(2, 1).forEach{ countCache.computeIfPresent(it) { _, value -> value + 1 } }
+countMap = mutableMapOf()
+input[0].chunked(1).forEach { countMap.compute(it){ _, old -> old?.plus(1) ?: 1L } }
 
-/**
- * TRACK COUNTS OF LETTERS AS THEY ARE ADDED
- * EXCEPT ACCOUNT FOR THE MULTIPLICITY CORRECTLY
- */
 for (i in 1..upTo) {
     val next : MutableMap<String, Long> = mutableMapOf()
     println("iteration $i")
     countCache.filter { it.value > 0L }.forEach{ (str, mult) ->
         val reactor = reactors[str]!!
+        countMap.compute(reactor){ _, old -> old?.plus(mult) ?: mult }
         println("process ($str) -> $reactor with mult $mult")
         val left = str[0] + reactor
         val right = reactor + str[1]
@@ -61,18 +57,6 @@ for (i in 1..upTo) {
     }
 
     countCache = next
-    println(countCache)
-    println()
 }
 
-countCache.map {  }
-
-countMap = countCache
-    .flatMap { (key, value) -> key.chunked(1).map { Pair(it, value) } }
-    .groupBy { it.first }
-    .map { Pair(it.key, it.value.sumOf { it.second }) }
-    .toMap()
-
-println(countCache)
-println(countMap)
 println(countMap.values.maxOrNull()!! - countMap.values.minOrNull()!!)
