@@ -46,9 +46,9 @@ val considerations : PriorityQueue<Path> = PriorityQueue()
 considerations.add(Path(startPoint, i++, startPoint.manhattan(endPoint)))
 var cheapestPath : Path? = null
 
+// This does not terminate after 100 minutes
 while (considerations.isNotEmpty()) {
     val curPath = considerations.poll()
-//    println("consider: $curPath")
     val nextPoints : Set<Point> = adjPointsMapper.invoke(curPath.curPoint)
         .filterNot { curPath.seen.contains(it) }
         .filter { input.hasPoint(it) }
@@ -60,16 +60,24 @@ while (considerations.isNotEmpty()) {
             curPath.seen.toMutableSet().also { it += nextPoint })
 
         if (nextPoint == endPoint) {
-            println("found a winner cost ${nextPath.cost}")
-            // found ONE shortest path
-            cheapestPath = cheapestPath?.let { if (cheapestPath!!.cost <= nextPath.cost) it else nextPath } ?: nextPath
-            if (considerations.isNotEmpty()) considerations.removeIf{ it.cost > cheapestPath!!.cost }
+            cheapestPath?.let {
+                if (nextPath.cost < it.cost) {
+                    println("  replaced with new winner $nextPath")
+                    cheapestPath = nextPath
+                }
+            } ?: run {
+                println("  found the first winner $nextPath")
+                cheapestPath = nextPath
+            }
+            considerations.removeIf{ it.cost > nextPath.cost  }
         }
         else {
             cheapestPath?.let {
-                if (nextPath.cost <= it.cost) considerations.add(nextPath)
+                if (nextPath.cost < it.cost) considerations.add(nextPath)
             } ?: considerations.add(nextPath)
         }
+
+        considerations.removeIf { it.seen.contains(nextPoint) && it.cost > nextPath.cost }
     }
 }
 
