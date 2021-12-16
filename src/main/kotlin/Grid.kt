@@ -1,9 +1,9 @@
 import Utils.Companion.toward
 
-class Grid<T>(grid: Map<Point, T>) {
+class Grid<T>(grid: Map<Point, T> = emptyMap()) {
     private val grid: MutableMap<Point, T> = grid.toMutableMap()
-    val width: Int
-    val height: Int
+    var width: Int
+    var height: Int
 
     init {
         var _width = 0
@@ -72,6 +72,9 @@ class Grid<T>(grid: Map<Point, T>) {
     }
 
     fun update(point: Point, item: T) : T? {
+        width = maxOf(width, point.x + 1)
+        height = maxOf(height, point.y + 1)
+
         return if (grid.containsKey(point)) {
             val old = grid[point]
             grid[point] = item

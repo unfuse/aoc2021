@@ -2,38 +2,47 @@ import java.util.PriorityQueue
 
 val input = Utils.readFileAsGrid("day15", { line -> line.chunked(1) }) { cell -> cell.toInt() }
 
+fun squareOfExcept(start: Point, end: Point, except: Collection<Point>) : Collection<Point> {
+    val result = mutableListOf<Point>()
+    for (x in start.x..end.x) {
+        for (y in start.y..end.y) {
+            val point = Point(x, y)
+            if (!except.contains(point)) result += point
+        }
+    }
+    return result.toList()
+}
+val gridSectionMapper = squareOfExcept(Point(0, 0), Point(4, 4), emptySet())
 val startPoint = Point(0, 0)
-val endPoint = Point(input.width - 1, input.height - 1)
+
+val grid : Grid<Int> = Grid()
+
+for (section in gridSectionMapper) {
+    input.getEntries().forEach { (key, value) ->
+        val nextPoint = key.plus(Point(section.x * input.width, section.y * input.height))
+        var nextVal = value + startPoint.manhattan(section)
+        if (nextVal > 9) {
+            nextVal %= 9
+        }
+        grid.update(nextPoint, nextVal)
+    }
+}
+
+val endPoint = Point(grid.width - 1, grid.height - 1)
 
 var i = 0
 data class Path(var curPoint : Point,
                 val id : Int,
                 val distance : Int,
                 val cost : Int = 0,
-                val seen : MutableSet<Point> = mutableSetOf()) : Comparable<Path> {
+                val expectedCost : Int = distance + cost) : Comparable<Path> {
 
     override fun compareTo(other: Path): Int {
-        val dist = distance.compareTo(other.distance)
-        return if (dist != 0) dist else cost.compareTo(other.cost)
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as Path
-
-        if (id != other.id) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        return id
+        return this.expectedCost.compareTo(other.expectedCost)
     }
 
     override fun toString(): String {
-        return "($id) $curPoint @ $cost"
+        return "($id) $curPoint @ $cost [$expectedCost]"
     }
 }
 
@@ -46,30 +55,32 @@ val considerations : PriorityQueue<Path> = PriorityQueue()
 considerations.add(Path(startPoint, i++, startPoint.manhattan(endPoint)))
 var cheapestPath : Path? = null
 
-// This does not terminate after 100 minutes
+val bestCostPerPoint : MutableMap<Point, Int> = mutableMapOf()
+bestCostPerPoint[startPoint] = 0
 while (considerations.isNotEmpty()) {
     val curPath = considerations.poll()
     val nextPoints : Set<Point> = adjPointsMapper.invoke(curPath.curPoint)
-        .filterNot { curPath.seen.contains(it) }
-        .filter { input.hasPoint(it) }
+        .filter { grid.hasPoint(it) }
         .toSet()
 
     nextPoints.forEach { nextPoint ->
         val nextPath = Path(nextPoint, i++, nextPoint.manhattan(endPoint),
-            curPath.cost + input.getVal(nextPoint)!!,
-            curPath.seen.toMutableSet().also { it += nextPoint })
+            curPath.cost + grid.getVal(nextPoint)!!)
+
+        bestCostPerPoint[nextPoint]
+            ?.let { if (it <= nextPath.cost) { return@forEach } }
+            ?:run { bestCostPerPoint[nextPoint] = nextPath.cost }
 
         if (nextPoint == endPoint) {
             cheapestPath?.let {
                 if (nextPath.cost < it.cost) {
-                    println("  replaced with new winner $nextPath")
                     cheapestPath = nextPath
                 }
             } ?: run {
-                println("  found the first winner $nextPath")
                 cheapestPath = nextPath
             }
-            considerations.removeIf{ it.cost > nextPath.cost  }
+
+            considerations.removeIf{ it.cost >= nextPath.cost  }
         }
         else {
             cheapestPath?.let {
@@ -77,7 +88,7 @@ while (considerations.isNotEmpty()) {
             } ?: considerations.add(nextPath)
         }
 
-        considerations.removeIf { it.seen.contains(nextPoint) && it.cost > nextPath.cost }
+        considerations.removeIf{ it.curPoint == nextPath.curPoint && it.cost > nextPath.cost  }
     }
 }
 

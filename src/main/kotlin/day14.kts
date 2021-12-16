@@ -44,14 +44,11 @@ input[0].chunked(1).forEach { countMap.compute(it){ _, old -> old?.plus(1) ?: 1L
 
 for (i in 1..upTo) {
     val next : MutableMap<String, Long> = mutableMapOf()
-    println("iteration $i")
     countCache.filter { it.value > 0L }.forEach{ (str, mult) ->
         val reactor = reactors[str]!!
         countMap.compute(reactor){ _, old -> old?.plus(mult) ?: mult }
-        println("process ($str) -> $reactor with mult $mult")
         val left = str[0] + reactor
         val right = reactor + str[1]
-        println("children are $left and $right")
         next.compute(left) { _, old -> old?.plus(mult) ?: mult}
         next.compute(right) { _, old -> old?.plus(mult) ?: mult}
     }
