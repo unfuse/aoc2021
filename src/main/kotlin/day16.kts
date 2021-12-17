@@ -59,10 +59,8 @@ fun makePacket() : Packet {
         var parsedLastSegment: Boolean
         var literal = ""
         do {
-            val lastBit = packetString.read(1)
-            parsedLastSegment = lastBit == "0"
-            val next = packetString.read(4)
-            literal += next
+            parsedLastSegment = packetString.read(1) == "0"
+            literal += packetString.read(4)
         } while (!parsedLastSegment)
 
         return LiteralPacket(version, type, literal.toLong(2))
@@ -71,7 +69,7 @@ fun makePacket() : Packet {
     else {
         val lengthType = packetString.read(1) { it.toInt() }
 
-        val stuff: Pair<Int, List<Packet>> = when (lengthType) {
+        val (length, subPackets) = when (lengthType) {
             0 -> {
                 val totalPacketLength = packetString.read(15) { it.toInt(2) }
                 val endPosition = parsePosition + totalPacketLength
@@ -91,7 +89,7 @@ fun makePacket() : Packet {
             else -> throw IllegalStateException("length type $lengthType not recognized at position $parsePosition")
         }
 
-        return OperatorPacket(version, type, lengthType, stuff.first, stuff.second)
+        return OperatorPacket(version, type, lengthType, length, subPackets)
     }
 }
 
