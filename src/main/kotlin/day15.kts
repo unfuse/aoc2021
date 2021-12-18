@@ -1,17 +1,8 @@
+import Utils.Companion.squareOfExcept
 import java.util.PriorityQueue
 
 val input = Utils.readFileAsGrid("day15", { line -> line.chunked(1) }) { cell -> cell.toInt() }
 
-fun squareOfExcept(start: Point, end: Point, except: Collection<Point>) : Collection<Point> {
-    val result = mutableListOf<Point>()
-    for (x in start.x..end.x) {
-        for (y in start.y..end.y) {
-            val point = Point(x, y)
-            if (!except.contains(point)) result += point
-        }
-    }
-    return result.toList()
-}
 val gridSectionMapper = squareOfExcept(Point(0, 0), Point(4, 4), emptySet())
 val startPoint = Point(0, 0)
 

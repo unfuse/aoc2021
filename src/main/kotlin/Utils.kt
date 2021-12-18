@@ -83,5 +83,16 @@ class Utils {
             val step = if (this > to) -1 else 1
             return IntProgression.fromClosedRange(this, to, step)
         }
+
+        fun squareOfExcept(start: Point, end: Point, except: Collection<Point>) : Collection<Point> {
+            val result = mutableListOf<Point>()
+            for (x in start.x.toward(end.x)) {
+                for (y in start.y.toward(end.y)) {
+                    val point = Point(x, y)
+                    if (!except.contains(point)) result += point
+                }
+            }
+            return result.toList()
+        }
     }
 }
