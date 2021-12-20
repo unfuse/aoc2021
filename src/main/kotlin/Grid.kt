@@ -1,21 +1,26 @@
 import Utils.Companion.toward
+import kotlin.math.max
+import kotlin.math.min
 
 class Grid<T>(grid: Map<Point, T> = emptyMap()) {
     private val grid: MutableMap<Point, T> = grid.toMutableMap()
-    var width: Int
-    var height: Int
+    var lowX: Int
+    var lowY: Int
+    var upperX: Int
+    var upperY: Int
 
     init {
-        var _width = 0
-        var _height = 0
+        lowX = 0
+        lowY = 0
+        upperX = 0
+        upperY = 0
 
         grid.keys.forEach {
-            _width = maxOf(_width, it.x)
-            _height = maxOf(_height, it.y)
+            lowX = min(lowX, it.x)
+            upperX = max(upperX, it.x)
+            lowY = min(lowY, it.y)
+            upperY = max(upperY, it.y)
         }
-
-        width = _width + 1
-        height = _height + 1
     }
 
     fun hasPoint(point: Point) : Boolean {
@@ -32,7 +37,7 @@ class Grid<T>(grid: Map<Point, T> = emptyMap()) {
 
     // The points in the map may be incomplete (sparse matrix style) - allow getting all "virtual" points for processing
     fun getVirtualPoints() : List<Point> {
-        return 0.toward(width-1).flatMap { x -> 0.toward(height-1).map{ Point(x, it) } }
+        return 0.toward(getWidth()-1).flatMap { x -> 0.toward(getHeight()-1).map{ Point(x, it) } }
     }
 
     fun getEntries() : List<Pair<Point, T>> {
@@ -43,20 +48,12 @@ class Grid<T>(grid: Map<Point, T> = emptyMap()) {
         return grid[point]
     }
 
-    fun getRow(y: Int) : List<Pair<Int, T>>? {
-        if (y < 0 || y >= height) {
-            return null
-        }
-
-        return grid.filter { it.key.y == y }.map { Pair(it.key.x, it.value) }
+    fun getWidth() : Int {
+        return upperX - lowX + 1
     }
 
-    fun getCol(x: Int) : List<Pair<Int, T>>? {
-        if (x < 0 || x >= width) {
-            return null
-        }
-
-        return grid.filter { it.key.x == x }.map { Pair(it.key.y, it.value) }
+    fun getHeight() : Int {
+        return upperY - lowY + 1
     }
 
     fun visit(x: Int, y: Int, visitor: (T) -> Unit) {
@@ -72,8 +69,10 @@ class Grid<T>(grid: Map<Point, T> = emptyMap()) {
     }
 
     fun update(point: Point, item: T) : T? {
-        width = maxOf(width, point.x + 1)
-        height = maxOf(height, point.y + 1)
+        lowX = min(lowX, point.x)
+        upperX = max(upperX, point.x)
+        lowY = min(lowY, point.y)
+        upperY = max(upperY, point.y)
 
         return if (grid.containsKey(point)) {
             val old = grid[point]
@@ -88,7 +87,7 @@ class Grid<T>(grid: Map<Point, T> = emptyMap()) {
     override fun toString(): String {
         return getVirtualPoints().sorted()
             .map { grid[it]?.toString() ?: "." }
-            .windowed(width, width)
+            .windowed(getWidth(), getWidth())
             .joinToString("\n") { it.joinToString("") }
     }
 }

@@ -10,7 +10,7 @@ val grid : Grid<Int> = Grid()
 
 for (section in gridSectionMapper) {
     input.getEntries().forEach { (key, value) ->
-        val nextPoint = key.plus(Point(section.x * input.width, section.y * input.height))
+        val nextPoint = key.plus(Point(section.x * input.getWidth(), section.y * input.getHeight()))
         var nextVal = value + startPoint.manhattan(section)
         if (nextVal > 9) {
             nextVal %= 9
@@ -19,7 +19,7 @@ for (section in gridSectionMapper) {
     }
 }
 
-val endPoint = Point(grid.width - 1, grid.height - 1)
+val endPoint = Point(grid.getWidth() - 1, grid.getHeight() - 1)
 
 var i = 0
 data class Path(var curPoint : Point,
