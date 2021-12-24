@@ -5,12 +5,13 @@ var grid = Utils.readStringAsGrid(input[1], { line -> line.chunked(1) }) { it }
 
 val serializer = mapOf(Pair(".", "0"), Pair("#", "1"))
 var default: String = "."
+val pointOne = Point(1, 1, 1, 1)
 
 fun iteratePicture(grid: Grid<String>) : Grid<String> {
     val nextGrid = mutableMapOf<Point, String>()
     for(nextPoint in Utils.squareOfExcept(
-        Point(grid.lowX - 1, grid.lowY - 1),
-        Point(grid.upperX + 1, grid.upperY + 1),
+        grid.lowPoint.minus(pointOne),
+        grid.upperPoint.plus(pointOne),
         emptySet())
     ) {
         val (code, nextVal) = calcPoint(nextPoint)
@@ -25,8 +26,8 @@ fun iteratePicture(grid: Grid<String>) : Grid<String> {
 
 fun calcPoint(point: Point) : Pair<Int, String> {
     val code : Int = Utils.squareOfExcept(
-        Point(point.x - 1, point.y - 1),
-        Point(point.x + 1, point.y + 1),
+        point.minus(pointOne),
+        point.plus(pointOne),
         emptySet()
     )
         .sorted()
